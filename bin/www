@@ -19,18 +19,23 @@ app.set('port', port);
 /**
  * Create HTTP server.
  */
+
+var server = http.createServer(app);
+
+/**
+ * Create HTTP socket io.
+ */
+var socketIO = require('socket.io').listen(server);
+
 var users = {};
-var name = ""
+var name = "";
 
 app.get('/:name', function(req, res) {
     name = req.params.name;
     console.log("users[socket.id]", name)
     res.sendFile(path.join(__dirname, "../views/index.html"));
-    // res.render('index');
-
 })
-var server = http.createServer(app);
-var socketIO = require('socket.io').listen(server);
+
 
 socketIO.sockets.on("connection", function(socket) {
     users[socket.id] = name;
@@ -44,21 +49,6 @@ socketIO.sockets.on("connection", function(socket) {
         socketIO.sockets.in("room").emit("news", users[socket.id] + ": " + data);
     })
 })
-
-// io.on('connection', function(socket) {
-//     console.log('User connected...');
-//     var address = socket.handshake.address;
-//     console.log('New connection from ' + address.address + ':' + address.port);
-
-//     socket.on('chat message', function(msg) {
-//         console.log('msg = ' + msg);
-//         io.emit('chat message', msg);
-//     })
-
-//     socket.on('disconnect', function() {
-//         console.log('user disconnected...');
-//     })
-// });
 
 /**
  * Listen on provided port, on all network interfaces.
