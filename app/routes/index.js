@@ -9,20 +9,6 @@ const path = require("path");
 
 var users = {}
 var name = ''
-    /* GET home page. */
-router.get('/', function(req, res, next) {
-    models.jhi_user.findAll({
-        order: [
-            ['first_name', 'DESC'],
-
-        ],
-    }).then(users => {
-        // res.send(users)
-        res.render('index', { title: 'Express12', users: users });
-
-    });
-
-});
 
 // router.get('/:name', function(req, res) {
 //     name = req.params.name;

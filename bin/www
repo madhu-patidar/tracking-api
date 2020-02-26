@@ -27,28 +27,17 @@ var server = http.createServer(app);
  */
 var socketIO = require('socket.io').listen(server);
 
-var users = {};
-var name = "";
+//set socketIO
+var socketIOHelper = require('../app/helpers/socketio');
+socketIOHelper.set(socketIO);
 
-app.get('/:name', function(req, res) {
-    name = req.params.name;
-    console.log("users[socket.id]", name)
-    res.sendFile(path.join(__dirname, "../views/index.html"));
+
+app.get('/', function(req, res) {
+    res.sendFile(path.join(__dirname, "../app/views/index.html"));
 })
 
-
-socketIO.sockets.on("connection", function(socket) {
-    users[socket.id] = name;
-    console.log("users[socket.id]", users[socket.id])
-    socket.on("room", function(room) {
-        socket.join(room);
-        socket.broadcast.in(room).emit("new user", users[socket.id] + ": new user has joined")
-    });
-
-    socket.on("new message", function(data) {
-        socketIO.sockets.in("room").emit("news", users[socket.id] + ": " + data);
-    })
-})
+var receivers = require('../app/sockets/receivers.server.sockets');
+receivers.receivers();
 
 /**
  * Listen on provided port, on all network interfaces.
